@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+router.use(checkAdmin);
+
 router.get("/", require("../controllers/admin/adminController"));
 
 router.get("/create", (req, res) => {
@@ -35,5 +37,24 @@ router.post(
   "/create/proizvod/save",
   require("../controllers/admin/createProizvod")
 );
+
+//savetnik
+router.get(
+  "/savetnik/termini/:name",
+  require("../controllers/admin/savetnikTerminiController")
+);
+
+function checkAdmin(req, res, next) {
+  let user = req.session.user;
+  if (user) {
+    if (user.role == "admin") {
+      next();
+    } else {
+      res.redirect("/");
+    }
+  } else {
+    res.redirect("/");
+  }
+}
 
 module.exports = router;
